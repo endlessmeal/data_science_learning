@@ -51,4 +51,12 @@ def variance(x):
     devitations = de_mean(x)
     return sum_of_squares(devitations) / (n - 1)
 
-print(variance(v))
+# нахождение квантиля значение ниже которого расположен определенный процент данных
+def quantile(x, p):
+    # вернет значение в х соответствующему проценту p данных
+    p_index = int(p * len(x))
+    return sorted(x)[p_index]
+
+# интерквартильный размах менее чувствителен к выбросам чем стандартное отклонение
+def interquartile_range(x):
+    return quantile(x, 0.75) - quantile(x, 0.25)
