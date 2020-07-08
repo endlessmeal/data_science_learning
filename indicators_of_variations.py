@@ -1,3 +1,4 @@
+import math
 # число друзей
 num_friends = [100,49,41,40,25,21,21,19,19,18,
                18,16,15,15,15,15,14,14,13,13,
@@ -50,6 +51,10 @@ def variance(x):
     n = len(x)
     devitations = de_mean(x)
     return sum_of_squares(devitations) / (n - 1)
+
+# стандартное отклонение, то есть корень от дисперсии
+def standart_devitation(x):
+    return math.sqrt(variance(x))
 
 # нахождение квантиля значение ниже которого расположен определенный процент данных
 def quantile(x, p):
