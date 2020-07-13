@@ -47,9 +47,13 @@ def make_hist_binom(p, n, trials):
     dots = Counter(data)
     print(dots)
     plt.scatter([x for x in dots.keys()], [v / trials for v in dots.values()])
+    plt.xlabel('Количество раз выпаданий решки')
+    plt.ylabel('Вероятность, что решка выпадет столько раз')
     plt.show()
 
+
+print([binomial(100, 0.5) for _ in range(10)])
 # make_hist(0.75, 100, 10000)
-make_hist_binom(0.5, 10, 1000)
+make_hist_binom(0.5, 100, 1000)
 
 
