@@ -1,6 +1,6 @@
 import math
 from probability_theory.pdf_cdf import normal_cdf, inverse_normal_cdf
-
+import random
 # аппроксимация биномальной случайной величины нормальным распределением
 def normal_approximation_to_binomial(n, p):
     '''находим мю и сигма соответсвующие биномиальному распределению'''
@@ -59,19 +59,65 @@ def normal_two_sided_bound(probability, mu=0, sigma=1):
     return lower_bound, upper_bound
 
 
-mu_0, sigma_0 = normal_approximation_to_binomial(1000, 0.5)
-print(mu_0, sigma_0) 
-
-# 95 % границы при условии, что p = 0.5
-lo, hi = normal_two_sided_bound(0.95, mu_1, sigma_1)
-print(lo, hi)
+mu_0, sigma_0 = normal_approximation_to_binomial(1000, 0.5) # 500, 15.81
 
 # стандартное отклонение и мат ожидание при вероятности 0.55(то есть в сторону орла)
-mu_1, sigma_1 = normal_approximation_to_binomial(1000, 0.55)
-print(mu_1, sigma_1)
+mu_1, sigma_1 = normal_approximation_to_binomial(1000, 0.55) # 550, 15.7
 
-type_1_probability = normal_probability_beetwen(lo, hi, mu_0, sigma_0)
-print(type_1_probability)
+# 95 % границы при условии, что p = 0.5
+lo, hi = normal_two_sided_bound(0.95, mu_0, sigma_1) # 469, 530
 
-type_2_probability = normal_probability_beetwen(lo, hi, mu_1, sigma_1)
-print(type_2_probability)
+# ошибка второго рода означает: не удалось отклонить нулевую гипотезу; 
+# это происходит, когда X все еще внутри первоначального интервала
+type_2_probability = normal_probability_beetwen(lo, hi, mu_1, sigma_1) # 0.11
+# мощность
+power = 1 - type_2_probability # 0.887
+
+
+#####
+#
+# p-значения
+#
+######
+
+# двустороннее p значение
+def two_sided_p_value(x, mu=0, sigma=1):
+    if x >= mu:
+        # если x больше среднего значения, то значения в хвосте больше x
+        return 2 * normal_probability_above(x, mu, sigma)
+    else:
+        # если x меньше среднего значения, то значения в хвосте меньше x
+        return 2 * normal_probability_below(x, mu, sigma)
+
+# 529.5 так при таком значении намного точнее вероятность получится при том, что выпадет как минимум 530 орлов
+two_sided_p_value(529.5, mu_0, sigma_0) # 0.62
+
+# проверка p значения
+def check_two_sided_p_value():
+    extreme_value_count = 0 # количество предельных значений
+    for _ in range(100000):
+        num_heads = sum(1 if random.random() < 0.5 else 0 for _ in range(1000))
+        if num_heads >= 530 or num_heads <= 470:
+            extreme_value_count += 1
+    return extreme_value_count / 100000
+
+# check_two_sided_p_value() # 0.62
+
+#####
+#
+# доверительные интервалы
+#
+######
+
+p_hat = 525 / 1000
+mu = p_hat
+sigma = math.sqrt(p_hat * (1 - p_hat) / 1000)
+
+# в этом случае вывод, что монет неуравновешена - не делается, так как значения лежат в пределах доверительного интервала
+normal_two_sided_bound(0.95, mu, sigma) # 0.490, 0.555
+
+p_hat = 540 / 1000
+mu = p_hat
+sigma = math.sqrt(p_hat * (1 - p_hat) / 1000)
+
+normal_two_sided_bound(0.95, mu, sigma) # 0.490, 0.555
